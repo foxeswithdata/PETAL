@@ -1,0 +1,13 @@
+[project]
+name = "petal"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+authors = [
+    {name = "Elisa Stefaniak", email = "stefaniak@iiasa.ac.at"},
+    {name = "Gemma Gerber", email = "gerber@iiasa.ac.at"}
+]
+dependencies = [
+    "abc"
+]
