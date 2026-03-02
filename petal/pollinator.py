@@ -4,6 +4,9 @@ from abc import abstractmethod, ABC
 class PollinatorBase(ABC):
     """Pollinator abstract base class"""
 
+    @abstractmethod
+    def initDensity(self):
+        pass
 
     @abstractmethod
     def mortalityRate(self):
@@ -14,7 +17,7 @@ class PollinatorBase(ABC):
         pass
 
     @abstractmethod
-    def growRate(self):
+    def growthRate(self):
         pass
 
     @abstractmethod

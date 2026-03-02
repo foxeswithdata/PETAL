@@ -4,9 +4,13 @@ from petal.pollinator import PollinatorBase
 class SolitaryPollinator(PollinatorBase):
 
     def __init__(self):
+        self.density = 1
         self.dGdt = 1
         self.dMdt = 1
         self.dBdt = 1
+        print("Hello World")
+
+    def initDensity(self):
         print("Hello World")
 
     def mortalityRate(self):
@@ -18,3 +22,5 @@ class SolitaryPollinator(PollinatorBase):
     def birthRate(self):
         print("Hello World")
 
+    def print(self):
+        print("Solitary Pollinator")

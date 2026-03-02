@@ -5,5 +5,5 @@ class PETALModel():
         config: Filepath of the YAML-configuration file
     """
 
-    def __init__(self):
+    def __init__(self, config):
         print("Initializing PETAL model")

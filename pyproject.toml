@@ -9,5 +9,6 @@ authors = [
     {name = "Gemma Gerber", email = "gerber@iiasa.ac.at"}
 ]
 dependencies = [
-    "abc"
+    "click",
+    "pyyaml>=6.0.3",
 ]

@@ -1,0 +1,9 @@
+pollinator:
+  sollitary_trait_file: solitary_pollinator_traits.csv
+  colony_trait_file: colony_pollinator_traits.csv
+
+  default_solitary:
+    init_density: 1
+
+  default_colony:
+    init_density: 1
