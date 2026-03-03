@@ -2,6 +2,8 @@
 import argparse
 import yaml
 
+from petal.PETALModel import PETALModel
+
 # create a parser object
 parser = argparse.ArgumentParser(description = "PETAL - Pollinator Model")
 
@@ -19,13 +21,17 @@ args = parser.parse_args()
 ### Load configuration file
 config_path = args.config
 
-print(config_path[0])
+if config_path is None:
+    config_path = default_config
+else:
+    config_path = config_path[0]
 
-with open(config_path[0]) as stream:
+with open(config_path) as stream:
     try:
         config = yaml.safe_load(stream)
-        print(config)
     except yaml.YAMLError as exc:
         print(exc)
 
-print(config)
+PETALModel = PETALModel(config)
+
+

@@ -1,6 +1,11 @@
+general:
+  start_date: 2020-01-01
+  end_date: 2020-12-31
+  multipatch: false
+
 pollinator:
-  sollitary_trait_file: solitary_pollinator_traits.csv
-  colony_trait_file: colony_pollinator_traits.csv
+  solitary_trait_file: example/solitary_pollinator_traits.csv
+  colony_trait_file: example/colony_pollinator_traits.csv
 
   default_solitary:
     init_density: 1
