@@ -21,6 +21,18 @@ class PollinatorBase(ABC):
         pass
 
     @abstractmethod
+    def flightCost(self):
+        pass
+
+    @abstractmethod
+    def nectarHarvestPotentialRate(self):
+        pass
+
+    @abstractmethod
+    def pollenHarvestPotentialRate(self):
+        pass
+
+    @abstractmethod
     def print(self):
         pass
 

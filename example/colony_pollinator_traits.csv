@@ -1,3 +1,5 @@
-species_name,init_density,growthrate
-example1,,
-example2,,
+species_name,init_density,foraging_effort_pollen,foraging_effort_nectar
+example1,,,
+example2,,,
+,,,
+,,,

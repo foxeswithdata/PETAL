@@ -23,5 +23,11 @@ class SolitaryPollinator(PollinatorBase):
     def birthRate(self):
         print("Hello World")
 
+    def nectarHarvestPotentialRate(self):
+        print("Hello World")
+
+    def pollenHarvestPotentialRate(self):
+        print("Hello World")
     def print(self):
         print("Solitary Pollinator")
+        print(self.name)

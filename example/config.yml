@@ -9,6 +9,7 @@ pollinator:
 
   default_solitary:
     init_density: 1
+    t_opt: 1
 
   default_colony:
     init_density: 1

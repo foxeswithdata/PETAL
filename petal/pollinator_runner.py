@@ -17,9 +17,6 @@ class PollinatorRunner:
         self.initColonyPollinators(config['pollinator']['colony_trait_file'], default_colony_poll)
         self.initSolitaryPollinators(config['pollinator']['solitary_trait_file'], default_solitary_poll)
 
-
-
-
     def initColonyPollinators(self, colony_pollinator_traits, default_colony_poll):
         # read file
         default_poll = default_colony_poll
@@ -33,11 +30,55 @@ class PollinatorRunner:
 
     def initSolitaryPollinators(self, solitary_pollinator_traits, default_solitary_poll):
         # read file
-        print("to do")
+        solitary_pollinators_df = pd.read_csv(solitary_pollinator_traits)
+        for index, row in solitary_pollinators_df.iterrows():
+            pollinator = copy.deepcopy(default_solitary_poll)
+            pollinator.name = row['species_name'] if row['species_name'] is not None else default_solitary_poll.name
+            self.pollinator.append(pollinator)
+
+    def step(self, environment, availableNectarReserves, availablePollenReserves):
+
+        ## Determine nectar+pollen collection
+
+        nectarHarvestPotential = []
+        pollenHarvestPotential = []
+        for index, pollinator in self.pollinator:
+            ## To do calculate effort for each pollinator
+            nectarHarvestPotential.append(pollinator.nectarHarvestPotentialRate(environment))
+            pollenHarvestPotential.append(pollinator.pollenHarvestPotentialRate(environment))
+
+        totalNectarHarvestPotential = sum(nectarHarvestPotential)
+        nectarHarvestPotentialPortion = nectarHarvestPotential / totalNectarHarvestPotential
+
+        if totalNectarHarvestPotential > availableNectarReserves:
+            ## here the maximum available nectar is used
+            for index, pollinator in self.pollinator:
+                actualHarvest = nectarHarvestPotentialPortion[index] * availableNectarReserves
+                pollinator.nectarHarvest(actualHarvest)
+        else:
+            for index, pollinator in self.pollinator:
+                actualHarvest = nectarHarvestPotential[index]
+                pollinator.nectarHarvest(actualHarvest)
+
+        totalPollenHarvestPotential = sum(pollenHarvestPotential)
+        pollenHarvestPotentialPortion = pollenHarvestPotential / totalPollenHarvestPotential
+
+        if totalPollenHarvestPotential > availablePollenReserves:
+            ## here the maximum available nectar is used
+            for index, pollinator in self.pollinator:
+                actualHarvest = pollenHarvestPotentialPortion[index] * availablePollenReserves
+                pollinator.nectarHarvest(actualHarvest)
+        else:
+            for index, pollinator in self.pollinator:
+                actualHarvest = nectarHarvestPotential[index]
+                pollinator.nectarHarvest(actualHarvest)
+
+
+
 
     def print(self):
         for pollinator in self.pollinator:
-            print(pollinator.name)
+            print(pollinator.print())
 
 
 
