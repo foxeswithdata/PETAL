@@ -39,6 +39,7 @@ class ColonyPollinator(PollinatorBase):
         self.dEpdt = 1 ## Egestion pollen rate
 
     def initDensity(self):
+        ## todo: implement
         print("Hello World")
 
     def mortalityRate(self):
@@ -51,6 +52,7 @@ class ColonyPollinator(PollinatorBase):
         self.dMdt = (mortality_natural + mortality_starvation + mortality_pesticide) * self.density
 
     def birthRate(self):
+        ## todo: implement
         print("Hello World")
 
     def heatingRate(self):

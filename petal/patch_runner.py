@@ -29,7 +29,8 @@ class PatchRunner:
                                        migrationRates)
 
         self.dNdt = plantNectar + pollinatorNectar
-        self.dPdt = plantPollen + plantPollen
+        self.dPdt = plantPollen + pollinatorPollen
+
 
 
     def step(self, solver):

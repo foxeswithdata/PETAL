@@ -50,7 +50,6 @@ class PollinatorRunner:
         totalNectarHarvestPotential = sum(nectarHarvestPotential)
         nectarHarvestPotentialPortion = nectarHarvestPotential / totalNectarHarvestPotential
 
-
         if totalNectarHarvestPotential > availableNectarReserves:
 
             ## here the maximum available nectar is used
@@ -80,6 +79,9 @@ class PollinatorRunner:
             pollinator.growRate()
             pollinator.birthRate()
             pollinator.mortalityRate()
+
+        return[min(totalNectarHarvestPotential, availableNectarReserves),
+               min(totalPollenHarvestPotential, availablePollenReserves)]
 
 
     def step(self, solver):
