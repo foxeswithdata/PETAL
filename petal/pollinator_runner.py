@@ -77,8 +77,10 @@ class PollinatorRunner:
         ## calculate growth rates
 
 
-    def step(self):
+    def step(self, solver):
         # Todo: complete
+        for pollinator in self.pollinator:
+            pollinator.step(solver)
 
 
     def print(self):
