@@ -9,6 +9,7 @@ class PollinatorRunner:
     def __init__(self, config):
 
         self.pollinator = []
+        self.migrationRates = []
 
         # Read in default traits
         default_colony_poll = ColonyPollinator(name = "default")
@@ -36,7 +37,7 @@ class PollinatorRunner:
             pollinator.name = row['species_name'] if row['species_name'] is not None else default_solitary_poll.name
             self.pollinator.append(pollinator)
 
-    def calculateRates(self, environment, availableNectarReserves, availablePollenReserves):
+    def calculateRates(self, environment, availableNectarReserves, availablePollenReserves, migrationRates):
 
         ## Determine nectar+pollen collection
         nectarHarvestPotential = []
