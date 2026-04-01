@@ -1,3 +1,4 @@
+import math
 from petal.pollinator import PollinatorBase
 
 class ColonyPollinator(PollinatorBase):
@@ -44,7 +45,7 @@ class ColonyPollinator(PollinatorBase):
         mortality_natural = 1
         d_starv = 1
         s_n_tol = 1
-        mortality_starvation = d_strv * exp(-self.reservesNectar / s_n_tol)
+        mortality_starvation = d_starv * math.exp(-self.reservesNectar / s_n_tol)
         ## todo: ignore for now
         mortality_pesticide = 0
         self.dMdt = (mortality_natural + mortality_starvation + mortality_pesticide) * self.density
@@ -61,10 +62,12 @@ class ColonyPollinator(PollinatorBase):
         print("Hello World")
 
     def egestionNectarRate(self):
+        ## todo: implement
         egestionNectar = 1
         self.dEndt = 1
 
     def egestionPollenRate(self):
+        ## todo: implement
         egestionPollen = 1
         self.dEpdt = 1
 

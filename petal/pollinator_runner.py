@@ -74,14 +74,17 @@ class PollinatorRunner:
                 actualHarvest = nectarHarvestPotential[index]
                 pollinator.nectarHarvest(actualHarvest)
 
-        ## calculate growth rates
+        ## calculate rates
+        for index, pollinator in self.pollinator:
+            pollinator.growRate()
+            pollinator.birthRate()
+            pollinator.mortalityRate()
 
 
     def step(self, solver):
         # Todo: complete
         for pollinator in self.pollinator:
             pollinator.step(solver)
-
 
     def print(self):
         for pollinator in self.pollinator:
