@@ -6,13 +6,11 @@ class SolitaryPollinator(PollinatorBase):
     def __init__(self,
                  name,
                  foragingEffortNectar,
-                 foragingEffortPollen,
-                 foragingAllocationTrait):
+                 foragingEffortPollen):
         ## traits
         self.name = name
         self.foragingEffortNectar = foragingEffortNectar  # Phi_N
         self.foragingEffortPollen = foragingEffortPollen  # Phi_P
-        self.foragingAllocationTrait = foragingAllocationTrait  ## beta_F
 
         ## state variables
         self.density = 1  # gC/m2  ## equivalent to structural biomass - need to determine how this is handled
@@ -140,3 +138,12 @@ class SolitaryPollinator(PollinatorBase):
     def print(self):
         print("Solitary Pollinator")
         print(self.name)
+
+
+def defaultSolitaryPollinator():
+    defaultForagingEffortNectar = 0.5
+    defaultForagingEffortPollen = 0.5
+    default_solitary_poll = SolitaryPollinator(name="default",
+                                               foragingEffortNectar=defaultForagingEffortNectar,
+                                               foragingEffortPollen=defaultForagingEffortPollen)
+    return(default_solitary_poll)

@@ -151,3 +151,13 @@ def rungekutta4(dXdt, dt):
     k3 = 1
     k4 = 1
     return((k1 + 2*k2 + 2*k3 + k4)/6)
+
+def defaultColonyPollinator():
+    defaultForagingEffortNectar = 0.5
+    defaultForagingEffortPollen = 0.5
+    defaultForagingAllocationTrait = 0.5
+    default_colony_poll = ColonyPollinator(name="default",
+                                           foragingEffortNectar=defaultForagingEffortNectar,
+                                           foragingEffortPollen=defaultForagingEffortPollen,
+                                           foragingAllocationTrait=defaultForagingAllocationTrait)
+    return(default_colony_poll)

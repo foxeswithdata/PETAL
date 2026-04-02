@@ -1,7 +1,9 @@
 import copy
 import pandas as pd
 from petal.colony_pollinator import ColonyPollinator
+from petal.colony_pollinator import defaultColonyPollinator
 from petal.solitary_pollinator import SolitaryPollinator
+from petal.solitary_pollinator import defaultSolitaryPollinator
 
 
 class PollinatorRunner:
@@ -12,8 +14,8 @@ class PollinatorRunner:
         self.migrationRates = []
 
         # Read in default traits
-        default_colony_poll = ColonyPollinator(name = "default")
-        default_solitary_poll = SolitaryPollinator(name="default")
+        default_colony_poll = defaultColonyPollinator()
+        default_solitary_poll = defaultSolitaryPollinator()
 
         self.initColonyPollinators(config['pollinator']['colony_trait_file'], default_colony_poll)
         self.initSolitaryPollinators(config['pollinator']['solitary_trait_file'], default_solitary_poll)
