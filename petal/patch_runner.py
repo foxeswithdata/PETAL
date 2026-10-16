@@ -22,6 +22,7 @@ class PatchRunner:
         self.plant.print()
 
     def calculateRates(self, environment, migrationRates = 0):
+        # for the plant need to add the uptake of nectar and pollen by the pollinators? Or just production
         [plantNectar, plantPollen] = self.plant.calculateRates(environment)
         [pollinatorNectar, pollinatorPollen] = self.pollinator.calculateRates(environment,
                                        self.availableNectarReserves,
@@ -39,3 +40,4 @@ class PatchRunner:
 
         self.availableNectarReserves += self.dNdt
         self.availablePollenReserves += self.dPdt
+

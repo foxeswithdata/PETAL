@@ -82,7 +82,7 @@ class SolitaryPollinator(PollinatorBase):
 
 
     ## HARVEST
-    def nectarHarvestPotentialRate(self):
+    def nectarHarvestPotentialRate(self, environment):
         # calculate maximum daily collection rate
         maxCollectionRateNectar = 1 #C_N
 
@@ -92,7 +92,7 @@ class SolitaryPollinator(PollinatorBase):
         ## Potential resources-indpendent collection rate
         collectionRateNectar = maxCollectionRateNectar * workforceEffortN
 
-        return(collectionRateNectar)
+        return(collectionRateNectar, environment)
 
     def pollenHarvestPotentialRate(self):
         # calculate maximum daily collection rate

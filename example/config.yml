@@ -1,7 +1,16 @@
 general:
   start_date: 2020-01-01
-  end_date: 2020-12-31
+  end_date: 2020-01-09
   multipatch: false
+
+climate:
+  climate_file: example/climate.csv
+
+plant:
+  simple_trait_file: example/simple_plant_traits.csv
+
+  default_simple_plant:
+    init_density: 1
 
 pollinator:
   solitary_trait_file: example/solitary_pollinator_traits.csv
@@ -13,3 +22,7 @@ pollinator:
 
   default_colony:
     init_density: 1
+
+report:
+  folder_out: example_out/
+  out_file: example/out_example.csv

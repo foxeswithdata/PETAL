@@ -10,7 +10,7 @@ class PollinatorRunner:
 
     def __init__(self, config):
 
-        self.pollinator = []
+        self.pollinators = []
         self.migrationRates = []
 
         # Read in default traits
@@ -22,13 +22,11 @@ class PollinatorRunner:
 
     def initColonyPollinators(self, colony_pollinator_traits, default_colony_poll):
         # read file
-        default_poll = default_colony_poll
-
         colony_pollinators_df =  pd.read_csv(colony_pollinator_traits)
         for index, row in colony_pollinators_df.iterrows():
-            pollinator = copy.deepcopy(default_poll)
-            pollinator.name = row['species_name'] if row['species_name'] is not None else default_poll.name
-            self.pollinator.append(pollinator)
+            pollinator = copy.deepcopy(default_colony_poll)
+            pollinator.name = row['species_name'] if pd.notna(row['species_name']) else default_colony_poll.name
+            self.pollinators.append(pollinator)
 
 
     def initSolitaryPollinators(self, solitary_pollinator_traits, default_solitary_poll):
@@ -36,15 +34,15 @@ class PollinatorRunner:
         solitary_pollinators_df = pd.read_csv(solitary_pollinator_traits)
         for index, row in solitary_pollinators_df.iterrows():
             pollinator = copy.deepcopy(default_solitary_poll)
-            pollinator.name = row['species_name'] if row['species_name'] is not None else default_solitary_poll.name
-            self.pollinator.append(pollinator)
+            pollinator.name = row['species_name'] if pd.notna(row['species_name']) else default_solitary_poll.name
+            self.pollinators.append(pollinator)
 
-    def calculateRates(self, environment, availableNectarReserves, availablePollenReserves, migrationRates):
+    def calculateRates(self, environment, availableNectar, availablePollen, migrationRates):
 
         ## Determine nectar+pollen collection
         nectarHarvestPotential = []
         pollenHarvestPotential = []
-        for index, pollinator in self.pollinator:
+        for pollinator in self.pollinators:
             ## To do calculate effort for each pollinator
             nectarHarvestPotential.append(pollinator.nectarHarvestPotentialRate(environment))
             pollenHarvestPotential.append(pollinator.pollenHarvestPotentialRate(environment))
@@ -52,11 +50,11 @@ class PollinatorRunner:
         totalNectarHarvestPotential = sum(nectarHarvestPotential)
         nectarHarvestPotentialPortion = nectarHarvestPotential / totalNectarHarvestPotential
 
-        if totalNectarHarvestPotential > availableNectarReserves:
+        if totalNectarHarvestPotential > availableNectar:
 
             ## here the maximum available nectar is used
-            for index, pollinator in self.pollinator:
-                actualHarvestRate = nectarHarvestPotentialPortion[index] * availableNectarReserves
+            for index, pollinator in enumerate(self.pollinators):
+                actualHarvestRate = nectarHarvestPotentialPortion[index] * availableNectar
                 pollinator.nectarHarvest(actualHarvestRate)
 
             else:
@@ -66,33 +64,33 @@ class PollinatorRunner:
         totalPollenHarvestPotential = sum(pollenHarvestPotential)
         pollenHarvestPotentialPortion = pollenHarvestPotential / totalPollenHarvestPotential
 
-        if totalPollenHarvestPotential > availablePollenReserves:
+        if totalPollenHarvestPotential > availablePollen:
             ## here the maximum available nectar is used
-            for index, pollinator in self.pollinator:
-                actualHarvestRate = pollenHarvestPotentialPortion[index] * availablePollenReserves
+            for index, pollinator in enumerate(self.pollinators):
+                actualHarvestRate = pollenHarvestPotentialPortion[index] * availablePollen
                 pollinator.nectarHarvest(actualHarvestRate)
         else:
-            for index, pollinator in self.pollinator:
+            for index, pollinator in enumerate(self.pollinators):
                 actualHarvest = nectarHarvestPotential[index]
                 pollinator.nectarHarvest(actualHarvest)
 
         ## calculate rates
-        for index, pollinator in self.pollinator:
-            pollinator.growRate()
+        for index, pollinator in enumerate(self.pollinators):
+            pollinator.growthRate()
             pollinator.birthRate()
             pollinator.mortalityRate()
 
-        return[min(totalNectarHarvestPotential, availableNectarReserves),
-               min(totalPollenHarvestPotential, availablePollenReserves)]
+        return[min(totalNectarHarvestPotential, availableNectar),
+               min(totalPollenHarvestPotential, availablePollen)]
 
 
     def step(self, solver):
         # Todo: complete
-        for pollinator in self.pollinator:
+        for pollinator in self.pollinators:
             pollinator.step(solver)
 
     def print(self):
-        for pollinator in self.pollinator:
+        for pollinator in self.pollinators:
             print(pollinator.print())
 
 
