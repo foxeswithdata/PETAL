@@ -39,36 +39,39 @@ class PollinatorRunner:
 
     def calculateRates(self, environment, availableNectar, availablePollen, migrationRates):
 
+        availableNectarTotal = sum(availableNectar)
+        availablePollenTotal = sum(availablePollen)
+
         ## Determine nectar+pollen collection
         nectarHarvestPotential = []
         pollenHarvestPotential = []
         for pollinator in self.pollinators:
             ## To do calculate effort for each pollinator
-            nectarHarvestPotential.append(pollinator.nectarHarvestPotentialRate(environment))
-            pollenHarvestPotential.append(pollinator.pollenHarvestPotentialRate(environment))
+            nectarHarvestPotential.append(pollinator.nectarHarvestPotentialRate(availableNectarTotal, environment))
+            pollenHarvestPotential.append(pollinator.pollenHarvestPotentialRate(availablePollenTotal, environment))
 
         totalNectarHarvestPotential = sum(nectarHarvestPotential)
         nectarHarvestPotentialPortion = nectarHarvestPotential / totalNectarHarvestPotential
 
-        if totalNectarHarvestPotential > availableNectar:
+        if totalNectarHarvestPotential > availableNectarTotal:
 
             ## here the maximum available nectar is used
             for index, pollinator in enumerate(self.pollinators):
-                actualHarvestRate = nectarHarvestPotentialPortion[index] * availableNectar
-                pollinator.nectarHarvest(actualHarvestRate)
+                actualHarvestRate = nectarHarvestPotentialPortion[index] * availableNectarTotal
+                pollinator.nectarHarvest(actualHarvestRate,environment)
 
             else:
                 actualHarvestRate = nectarHarvestPotential[index]
-                pollinator.nectarHarvest(actualHarvestRate)
+                pollinator.nectarHarvest(actualHarvestRate,environment)
 
         totalPollenHarvestPotential = sum(pollenHarvestPotential)
         pollenHarvestPotentialPortion = pollenHarvestPotential / totalPollenHarvestPotential
 
-        if totalPollenHarvestPotential > availablePollen:
+        if totalPollenHarvestPotential > availablePollenTotal:
             ## here the maximum available nectar is used
             for index, pollinator in enumerate(self.pollinators):
-                actualHarvestRate = pollenHarvestPotentialPortion[index] * availablePollen
-                pollinator.nectarHarvest(actualHarvestRate)
+                actualHarvestRate = pollenHarvestPotentialPortion[index] * availablePollenTotal
+                pollinator.pollenHarvest(actualHarvestRate)
         else:
             for index, pollinator in enumerate(self.pollinators):
                 actualHarvest = nectarHarvestPotential[index]
@@ -77,6 +80,7 @@ class PollinatorRunner:
 
         ## calculate rates
         for index, pollinator in enumerate(self.pollinators):
+            pollinator.maintenanceRate(environment)
             pollinator.growthRate()
             pollinator.birthRate()
             pollinator.mortalityRate()

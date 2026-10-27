@@ -74,7 +74,11 @@ class ColonyPollinator(PollinatorBase):
                  massSpecificCollectingRateNectarTrait,
                  massSpecificCollectingRatePollenTrait,
                  egestionEfficiencyNectarTrait,
-                 egestionEfficiencyPollenTrait):
+                 egestionEfficiencyPollenTrait,
+                 maintenanceNectarRateTrait,
+                 maintenancePollenRateTrait,
+                 foragingMaintenanceRateTrait
+                 ):
 
         ## traits
         self.name = name
@@ -94,7 +98,13 @@ class ColonyPollinator(PollinatorBase):
         self.massSpecificCollectingRateNectar = massSpecificCollectingRateNectarTrait # C_N [mgC/mgC/d] ; mass-specific nectar collection rate
         self.massSpecificCollectingRatePollen = massSpecificCollectingRatePollenTrait # C_P [mgC/mgC/d] ; mass-specific pollen collection rate
 
+        self.foragingDistanceMultiplier = 2 # lambda - need to return to nest
+        self.foragingMaintenanceRate = 0.1 # m_F [mgC/mgC/d] ; mass-specific foraging maintenance rate
+
         # Maintenance and egestion
+        self.maintenanceNectarRate = maintenanceNectarRateTrait  # m_N [mgC/mgC/d] ; mass-specific nectar maintenance rate
+        self.maintenancePollenRate = maintenancePollenRateTrait # m_P [mgC/mgC/d] ; mass-specific pollen maintenance rate
+
         self.egestionNectarEfficiency = egestionEfficiencyNectarTrait # epsilon_N [dimensionless, 0-1] ; fraction of nectar that is egested
         self.egestionPollenEfficiency = egestionEfficiencyPollenTrait # epsilon_P [dimensionless, 0-1] ; fraction of pollen that is egested
 
@@ -112,9 +122,15 @@ class ColonyPollinator(PollinatorBase):
 
         # rates
         self.dGdt = 1 ## Growth rate
-        self.dMdt = 1 ## mortality rate
+        self.dDdt = 1 ## mortality rate
         self.dBdt = 1 ## Birth/Reproduction rate
-        self.dRdt = 1 ## Respiration rate
+        self.dMNdt = 1  ## Maintenance rate nectar
+        self.dMPdt = 1  ## Maintenance rate pollen
+        self.dRNdt = 1 ## Respiration rate nectar
+        self.dRPdt = 1 ## Respiration rate pollen
+        self.dMFdt = 1 ## Maintenance rate foraging
+        self.dMHdt = 1 ## Maintenance rate heating
+        self.dMdt = 1 ## Maintenance rate
         self.dMigdR = 1 ## Migration rate
 
         ## collection
@@ -150,25 +166,41 @@ class ColonyPollinator(PollinatorBase):
 
         print("Hello World")
 
-    def flightCost(self):
-        ## todo: implement
-        print("Hello World")
+    def foragingMaintenanceRate(self, environment):
+        self.dMFdt = (self.foragingMaintenanceRate * self.foragingAllocation * self.adultBiomassDensity *
+                  (self.foragingEffortNectar * self.spatialForagingEfficiencyNectar(environment) + self.foragingEffortPollen * self.spatialForagingEfficiencyPollen(environment)) *
+                  self.foragingDistanceMultiplier)
+
+    def heatingMaintenanceRate(self, environment):
+        self.dMHdt = (self.maintenanceNectarRate * self.nestTemperature * self.nestWorkingAllocation * self.adultBiomassDensity)
+
 
     def egestionRateNectar(self):
-        egestionNectar = self.dPndt * self.egestionNectarEfficiency
-        self.dEndt = egestionNectar
+        self.dENdt = self.dPndt * self.egestionNectarEfficiency
 
     def egestionRatePollen(self):
-        egestionPollen = self.dPpdt * self.egestionPollenEfficiency
-        self.dEpdt = egestionPollen
+        self.dEPdt = self.dPpdt * self.egestionPollenEfficiency
 
-    def respirationRate(self, temperature):
-        somaticMaintenanceRespirationRate = 1
-        foragingRespirationRate = 1
-        ## Todo: divide foraging respiration into nectar and pollen
-        self.dRdt = (somaticMaintenanceRespirationRate +
-                     self.heatingRate(temperature) +
-                     foragingRespirationRate)
+    def respirationRatePollen(self, environment):
+        self.dRPdt = self.maintenancePollenRate * self.density
+
+    def respirationRateNectar(self, environment):
+        self.dRNdt = self.maintenanceNectarRate * self.density
+
+    def maintenanceRatePollen(self, environment):
+        self.respirationRatePollen(environment)
+        self.dMPdt = self.dRPdt
+
+    def maintenanceRateNectar(self, environment):
+        self.respirationRateNectar(environment)
+        self.foragingMaintenanceRate(environment)
+        self.heatingMaintenanceRate(environment)
+        self.dMNdt = self.dRNdt + self.dMFdt + self.dMHdt
+
+    def maintenanceRate(self, environment):
+        self.maintenanceRateNectar(environment)
+        self.maintenanceRatePollen(environment)
+        self.dMdt = (self.dMNdt + self.dMPdt)
 
     def growthRate(self):
         self.dGdt = 1
@@ -178,41 +210,24 @@ class ColonyPollinator(PollinatorBase):
     # todo write method description - this is the potential harvest rate given total patch resources
     def nectarHarvestPotentialRate(self, totalNectarAvailable, environment):
         # calculate maximum daily collection rate
-        workforceEffortNectar = self.massSpecificCollectingRateNectarTrait * self.density * self.foragingAllocationTrait * self.foragingEffortNectar * self.spatialForagingEfficiencyNectar(environment) # V_F,N
+        workforceEffortNectar = self.massSpecificCollectingRateNectar * self.adultBiomassDensity * self.foragingAllocation * self.foragingEffortNectar * self.spatialForagingEfficiencyNectar(environment) # V_F,N
 
         ## Potential resources-indpendent collection rate
-        collectionRateNectar = (totalNectarAvailable* workforceEffortNectar)/(totalNectarAvailable + workforceEffortNectar) * self.temperatureForagingEfficiency(environment)
-
+        collectionRateNectar = (totalNectarAvailable * workforceEffortNectar)/(totalNectarAvailable + workforceEffortNectar) * self.temperatureForagingEfficiency(environment)
         return(collectionRateNectar)
 
     def pollenHarvestPotentialRate(self, totalPollenAvailable, environment):
-        # calculate maximum daily collection rate
-
-        ## Todo: determine size driven function here
-        workforceEffortPollen = self.massSpecificCollectingRatePollenTrait * self.density * self.foragingAllocationTrait * self.foragingEffortPollen  * self.spatialForagingEfficiencyPollen(environment) # n_NF
+        workforceEffortPollen = self.massSpecificCollectingRatePollen * self.adultBiomassDensity * self.foragingAllocation * self.foragingEffortPollen  * self.spatialForagingEfficiencyPollen(environment) # n_NF
 
         ## Potential resources-indpendent collection rate
         collectionRatePollen = (totalPollenAvailable * workforceEffortPollen) / (totalPollenAvailable + workforceEffortPollen) * self.temperatureForagingEfficiency(environment)
         return (collectionRatePollen)
 
-    def nectarHarvestRate(self, nectarAvailable, environment):
-        ## Todo:a should we add efficiency here? Or another conversion factor? Is this species dependent?
-        workforceEffortNectar = self.massSpecificCollectingRateNectarTrait * self.density * self.foragingAllocationTrait * self.foragingEffortNectar * self.spatialForagingEfficiencyNectar(environment) # V_F,N
+    def nectarHarvestRate(self, actualAvailableNectar):
+        self.dPndt = actualAvailableNectar - self.egestionNectarRate(actualAvailableNectar)
 
-        ## Potential resources-indpendent collection rate
-        collectionRateNectar = (nectarAvailable * workforceEffortNectar)/(nectarAvailable + workforceEffortNectar) * self.temperatureForagingEfficiency(environment)
-
-        self.dPndt = collectionRateNectar - self.egestionNectarRate(collectionRateNectar)
-
-    def pollenHarvestRate(self, pollenResourceRate, environment):
-
-        workforceEffortPollen = self.massSpecificCollectingRatePollenTrait * self.density * self.foragingAllocationTrait * self.foragingEffortPollen * self.spatialForagingEfficiencyPollen(
-            environment)  # V_F,P
-
-        ## Potential resources-indpendent collection rate
-        collectionRatePollen = (pollenResourceRate * workforceEffortPollen)/(pollenResourceRate + workforceEffortPollen) * self.temperatureForagingEfficiency(environment)
-
-        self.dPpdt = collectionRatePollen
+    def pollenHarvestRate(self, actualAvailablePollen, environment):
+        self.dPpdt = actualAvailablePollen - self.egestionPollenRate(actualAvailablePollen)
 
     ## todo implementation
     def spatialForagingEfficiencyNectar(self, environment):
@@ -271,6 +286,9 @@ def defaultColonyPollinator():
     massSpecificCollectingRatePollenTrait = 1
     egestionEfficiencyNectarTrait = 0.05
     egestionEfficiencyPollenTrait = 0.3
+    maintenanceNectarRateTrait = 0.1
+    maintenancePollenRateTrait = 0.1
+    foragingMaintenanceRateTrait = 0.1
     default_colony_poll = ColonyPollinator(name="default",
                                            foragingEffortNectar=defaultForagingEffortNectar,
                                            foragingEffortPollen=defaultForagingEffortPollen,
@@ -281,5 +299,9 @@ def defaultColonyPollinator():
                                            massSpecificCollectingRateNectarTrait=massSpecificCollectingRateNectarTrait,
                                            massSpecificCollectingRatePollenTrait=massSpecificCollectingRatePollenTrait,
                                            egestionEfficiencyNectarTrait=egestionEfficiencyNectarTrait,
-                                           egestionEfficiencyPollenTrait=egestionEfficiencyPollenTrait)
+                                           egestionEfficiencyPollenTrait=egestionEfficiencyPollenTrait,
+                                           maintenanceNectarRateTrait=maintenanceNectarRateTrait,
+                                           maintenancePollenRateTrait=maintenancePollenRateTrait,
+                                           foragingMaintenanceRateTrait=foragingMaintenanceRateTrait)
+
     return(default_colony_poll)

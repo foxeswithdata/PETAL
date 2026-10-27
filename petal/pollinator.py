@@ -20,16 +20,15 @@ class PollinatorBase(ABC):
     def growthRate(self):
         pass
 
-    @abstractmethod
-    def flightCost(self):
+    def maintenanceRate(self, environment):
         pass
 
     @abstractmethod
-    def nectarHarvestPotentialRate(self):
+    def nectarHarvestPotentialRate(self, totalNectarAvailable, environment):
         pass
 
     @abstractmethod
-    def pollenHarvestPotentialRate(self):
+    def pollenHarvestPotentialRate(self, totalPollenAvailable, environment):
         pass
 
     @abstractmethod
