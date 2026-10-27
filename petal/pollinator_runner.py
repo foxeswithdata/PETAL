@@ -72,7 +72,8 @@ class PollinatorRunner:
         else:
             for index, pollinator in enumerate(self.pollinators):
                 actualHarvest = nectarHarvestPotential[index]
-                pollinator.nectarHarvest(actualHarvest)
+                pollinator.nectarHarvest(actualHarvest,environment)
+                pollinator.egestionRatePollen()
 
         ## calculate rates
         for index, pollinator in enumerate(self.pollinators):
