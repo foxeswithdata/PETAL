@@ -51,31 +51,37 @@ class PollinatorRunner:
             pollenHarvestPotential.append(pollinator.pollenHarvestPotentialRate(availablePollenTotal, environment))
 
         totalNectarHarvestPotential = sum(nectarHarvestPotential)
-        nectarHarvestPotentialPortion = nectarHarvestPotential / totalNectarHarvestPotential
+        if totalNectarHarvestPotential > 0:
+            nectarHarvestPotentialPortion = [x / totalNectarHarvestPotential for x in nectarHarvestPotential]
+        else:
+            nectarHarvestPotentialPortion = [0] * len(nectarHarvestPotential)
 
         if totalNectarHarvestPotential > availableNectarTotal:
 
             ## here the maximum available nectar is used
             for index, pollinator in enumerate(self.pollinators):
                 actualHarvestRate = nectarHarvestPotentialPortion[index] * availableNectarTotal
-                pollinator.nectarHarvest(actualHarvestRate,environment)
+                pollinator.nectarHarvestRate(actualHarvestRate,environment)
 
             else:
                 actualHarvestRate = nectarHarvestPotential[index]
-                pollinator.nectarHarvest(actualHarvestRate,environment)
+                pollinator.nectarHarvestRate(actualHarvestRate,environment)
 
         totalPollenHarvestPotential = sum(pollenHarvestPotential)
-        pollenHarvestPotentialPortion = pollenHarvestPotential / totalPollenHarvestPotential
+        if totalPollenHarvestPotential > 0:
+            pollenHarvestPotentialPortion = [x / totalPollenHarvestPotential for x in pollenHarvestPotential]
+        else:
+            pollenHarvestPotentialPortion = [0] * len(pollenHarvestPotential)
 
         if totalPollenHarvestPotential > availablePollenTotal:
             ## here the maximum available nectar is used
             for index, pollinator in enumerate(self.pollinators):
                 actualHarvestRate = pollenHarvestPotentialPortion[index] * availablePollenTotal
-                pollinator.pollenHarvest(actualHarvestRate)
+                pollinator.pollenHarvestRate(actualHarvestRate, environment)
         else:
             for index, pollinator in enumerate(self.pollinators):
                 actualHarvest = nectarHarvestPotential[index]
-                pollinator.nectarHarvest(actualHarvest,environment)
+                pollinator.pollenHarvestRate(actualHarvest,environment)
                 pollinator.egestionRatePollen()
 
         ## calculate rates
